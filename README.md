@@ -123,6 +123,7 @@ Note that the stops_clean.csv.gz file is already in the repo.
 Description: The purpose of this is to do EDA of stop patterns across demographic groups, time, and geography. 
 
 Input: `acs-and-shape-data/stops_clean.csv.gz`
+
 Output:  Several figures that display information about the data, may be available in the notebook.
 
 **4. Modeling** (`modeling/modeling.ipynb`)
@@ -130,14 +131,17 @@ Output:  Several figures that display information about the data, may be availab
 Description:  The purpose of this step is to predict and analyze stop outcomes through different modeling approaches. It currently includes 3 unique approaches.
 
 Binary Random Forest Classifier: The first model is a binary Random Forest that predicts arrest vs not arrest. It uses a tract-aware train test split, and includes features such as age, race, sex, reason for stop, time variables, ACS variables. 
+
 	 - Input: `stops_clean.csv.gz`.
 	 - Output:  model, confusion matrix, precision/recall scores, ROC AUC, and feature importance rankings.
 	
 Multiclass Random Forest model: Aims to predict warning/citation/arrest/none outcomes, which has a similar setup to the binary model and outputs a confusion matrix, classification report, and feature importances.
+
 	 - Input:  `stops_clean.csv.gz`.
 	 - Output: confusion matrix, classification report, and feature importances.
 
 Multinomial Logistic Regression model:  Aims to predict stop outcome using features such as age, race, sex, lat/lng, and other temporal features.
+
 	 - Input: `stops_clean.csv.gz`.
 	 - Output: classification report containing information regarding precision/recall per outcome class.
 
