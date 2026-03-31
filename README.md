@@ -122,7 +122,7 @@ Note that the stops_clean.csv.gz file is already in the repo.
 
 Description: The purpose of this is to do EDA of stop patterns across demographic groups, time, and geography. 
 
-Input: `acs-and-shape-data/stops_clean.csv.gz`
+Input: `acs-and-shape-data/stops_clean.csv.gz`, `acs-and-shape-data/tl_2015_22_tract.shp` (Census tract shapefiles for spatial mapping)
 
 Output:  Several figures that display information about the data, may be available in the notebook.
 
