@@ -113,7 +113,7 @@ Description: The purpose of this step is to read in the geocoded SOPP data, filt
 
 Input: `geocoding/policing_imputed_coords.csv.gz` (SOPP data with imputed coordinates),  `acs-and-shape-data/2015DEM.csv` ( ACS demographic data), `acs-and-shape-data/2015EDU.csv`  (ACS education data), `acs-and-shape-data/2015INC.csv` (ACS income data), `acs-and-shape-data/tl_2015_22_tract.shp` (Census tract shapefiles).
 
-Output:  Produces `acs-and-shape-data/stops_clean.csv.gz` as the output, which represents the final merged dataset containing 172993 rows and 72 columns, and includes many key variables. 
+Output:  Produces `acs-and-shape-data/stops_clean.csv.gz` as the output, which represents the final merged dataset containing 274657 rows and 77 columns, and includes many key variables. 
 
 Note that the stops_clean.csv.gz file is already in the repo.
 
