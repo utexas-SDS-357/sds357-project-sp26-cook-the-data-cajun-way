@@ -1,1 +1,3 @@
 geocoding/policing_imputed_coords.csv
+.DS_Store
+venv/
