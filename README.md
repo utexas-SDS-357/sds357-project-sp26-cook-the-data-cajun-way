@@ -28,13 +28,13 @@ Some of our motivating questions include:
 
 -  The source is the US Census Bureau
 - This dataset contains census tract-level income, race, and education data for New Orleans tracts
-- The files for these estimates can be found in the files in `acs-and-shape-data/2015DEM.csv`, `acs-and-shape-data/2015EDU.csv`, `acs-and-shape-data/2015INC.csv`
+- The files for these estimates can be found in the files in `data/raw/acs/'
 
 ### Supplementary Dataset: Census Tract Shapefile
 
 -  The source is the US Census Bureau
 -  It is used for spatial join between stop coordinates and census tracts, covers census tracts in New Orleans
--  Files in `acs-and-shape-data/tl_2015_22_tract.*`. There are many of them, but they generally follow this pattern.
+-  Files in `data/raw/shapefiles/`. There are many of them, but they generally follow this pattern.
 
 ----------
 
@@ -45,28 +45,27 @@ Some of our motivating questions include:
 ```
 sds357-project-sp26-cook-the-data-cajun-way/
 │
-├── acs-and-shape-data/         # ACS census data, Census tract shapefiles
-│   ├── 2015DEM.csv             # ACS demographic estimates by tract
-│   ├── 2015EDU.csv             # ACS education estimates by tract
-│   ├── 2015INC.csv             # ACS income estimates by tract
-│   ├── tl_2015_22_tract.*      # Census tract shapefile stuff (multiple files)
-│   ├── mergeclean.ipynb        # Merges ACS, SOPP data 
-│   ├── stops_clean.csv.gz      # merged dataset for EDA, modeling
+├── data/
+│   ├── raw/
+│   │   ├── acs/                        # ACS census data
+│   │   │   ├── 2015DEM.csv
+│   │   │   ├── 2015EDU.csv
+│   │   │   └── 2015INC.csv
+│   │   ├── shapefiles/                 # Census tract shapefiles
+│   │   │   └── tl_2015_22_tract.*
+│   │   └── policing_imputed_coords.csv.gz
+│   └── processed/
+│       ├── stops_clean.csv.gz          # Final merged dataset
+│       └── geocoded_locations.csv
 │
-├── eda/
-│   └── eda326.ipynb   # Notebook containing EDA figures
-├── geocoding/
-│   ├── osmapi.ipynb                    # geocoding code
-│   ├── geocoded_locations.csv          # geocoded coordinates
-│   └── policing_imputed_coords.csv.gz  # SOPP dataset with imputed coordinates added
+├── notebooks/
+│   ├── geocoding.ipynb                 # Geocoding code
+│   ├── mergeclean.ipynb                # Merges ACS, SOPP data
+│   ├── eda.ipynb                       # EDA figures
+│   └── modeling.ipynb                  # Models
 │
-├── modeling/
-│   └── modeling.ipynb         Random forest, multinomial logistic regression models
-│
+├── README.md
 └── requirements.txt
-└── README.md
-
-
 ```
 
 ----------
@@ -97,55 +96,55 @@ pip install pandas numpy geopandas geopy scikit-learn statsmodels matplotlib sea
 The full pipeline can be run in several steps. You might only need to rerun steps 1 and 2 if you are reproducing from scratch, since their outputs are already in the repo in their respective folders.
 
 
-**1. Geocoding** (`geocoding/osmapi.ipynb`)
+**1. Geocoding** (`notebooks/geocoding.ipynb`)
 
-Description: Many stops in the SOPP dataset are missing lat/long data, so this step is to impute coordinates for locations without coordinates by using addresses, if the observations have any. Running this notebook (`osmapi.ipynb`) attempts to impute coordinates using addresses for observations that may not have lat/long data already.
+Description: Many stops in the SOPP dataset are missing lat/long data, so this step is to impute coordinates for locations without coordinates by using addresses, if the observations have any. Running this notebook (`geocoding.ipynb`) attempts to impute coordinates using addresses for observations that may not have lat/long data already.
 
 Input:  Its input is the raw SOPP csv file (which you may have locally).
 
-Output: Its output are two files. Firstly it produces `geocoding/geocoded_locations.csv`, which is like a lookup table that maps address strings to imputed lat/lng coordinates, and also `geocoding/policing_imputed_coords.csv.gz`, which is the full SOPP dataset that has `final_lat` and `final_lng` columns which represent original coordinates when available, and imputed coordinates elsewhere mostly. 
+Output: Its output are two files. Firstly it produces `data/processed/geocoded_locations.csv`, which is like a lookup table that maps address strings to imputed lat/lng coordinates, and also `data/raw/policing_imputed_coords.csv.gz`, which is the full SOPP dataset that has `final_lat` and `final_lng` columns which represent original coordinates when available, and imputed coordinates elsewhere mostly. 
 
 Note that this notebook can take 1+ hours to run fuly due to the Nominatim API rate limits, and the output file is already in the repo.
 
-**2. Merge** (`acs-and-shape-data/mergeclean.ipynb`)
+**2. Merge** (`notebooks/mergeclean.ipynb`)
 
 Description: The purpose of this step is to read in the geocoded SOPP data, filter it from 2011-2015, clean the ACS datasets, and join stops to census tracts so that each stop can get associated with neighborhood-level socioeconomic characteristics.
 
-Input: `geocoding/policing_imputed_coords.csv.gz` (SOPP data with imputed coordinates),  `acs-and-shape-data/2015DEM.csv` ( ACS demographic data), `acs-and-shape-data/2015EDU.csv`  (ACS education data), `acs-and-shape-data/2015INC.csv` (ACS income data), `acs-and-shape-data/tl_2015_22_tract.shp` (Census tract shapefiles).
+Input: `data/raw/policing_imputed_coords.csv.gz` (SOPP data with imputed coordinates),  `data/raw/acs/2015DEM.csv` ( ACS demographic data), `data/raw/acs/2015EDU.csv`  (ACS education data), `data/raw/acs/2015INC.csv` (ACS income data), `data/raw/shapefiles/tl_2015_22_tract.shp` (Census tract shapefiles).
 
-Output:  Produces `acs-and-shape-data/stops_clean.csv.gz` as the output, which represents the final merged dataset containing 274657 rows and 77 columns, and includes many key variables. 
+Output:  Produces `data/processed/stops_clean.csv.gz` as the output, which represents the final merged dataset containing 274657 rows and 77 columns, and includes many key variables. 
 
 Note that the stops_clean.csv.gz file is already in the repo.
 
 
-**3. EDA** (`eda/eda326.ipynb`)
+**3. EDA** (`notebooks/eda.ipynb`)
 
 Description: The purpose of this is to do EDA of stop patterns across demographic groups, time, and geography. 
 
-Input: `acs-and-shape-data/stops_clean.csv.gz`, `acs-and-shape-data/tl_2015_22_tract.shp` (Census tract shapefiles for spatial mapping)
+Input: `data/processed/stops_clean.csv.gz`, `data/raw/shapefiles/tl_2015_22_tract.shp` (Census tract shapefiles for spatial mapping)
 
 Output:  Several figures that display information about the data, may be available in the notebook.
 
-**4. Modeling** (`modeling/modeling.ipynb`)
+**4. Modeling** (`notebooks/modeling.ipynb`)
 
 Description:  The purpose of this step is to predict and analyze stop outcomes through different modeling approaches. It currently includes 3 unique approaches.
 
 Binary Random Forest Classifier: The first model is a binary Random Forest that predicts arrest vs not arrest. It uses a tract-aware train test split, and includes features such as age, race, sex, reason for stop, time variables, ACS variables. 
 
-	 - Input: `stops_clean.csv.gz`.
+	 - Input: `data/processed/stops_clean.csv.gz`.
 	 - Output:  model, confusion matrix, precision/recall scores, ROC AUC, and feature importance rankings.
 	
 Multiclass Random Forest model: Aims to predict warning/citation/arrest/none outcomes, which has a similar setup to the binary model and outputs a confusion matrix, classification report, and feature importances.
 
-	 - Input:  `stops_clean.csv.gz`.
+	 - Input:  `data/processed/stops_clean.csv.gz`.
 	 - Output: confusion matrix, classification report, and feature importances.
 
 Multinomial Logistic Regression model:  Aims to predict stop outcome using features such as age, race, sex, lat/lng, and other temporal features.
 
-	 - Input: `stops_clean.csv.gz`.
+	 - Input: `data/processed/stops_clean.csv.gz`.
 	 - Output: classification report containing information regarding precision/recall per outcome class.
 
-All models read input from `stops_clean.csv.gz`.
+All models read input from `data/processed/stops_clean.csv.gz`.
 
 ----------
 
